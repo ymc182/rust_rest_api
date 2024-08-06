@@ -1,5 +1,5 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use routes::api::v1::echo;
+use routes::{api::v1::echo, user::register};
 use std::time::SystemTime;
 mod error;
 mod middleware;
@@ -25,6 +25,7 @@ async fn main() -> std::io::Result<()> {
                     .wrap(middleware::ApiKeyAuth::new("secret".to_string()))
                     .service(echo::service),
             )
+            .service(web::scope("/user").service(register::service))
             .service(index)
     })
     .bind("127.0.0.1:8080")?
