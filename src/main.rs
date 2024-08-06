@@ -1,10 +1,10 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use middleware::api_key_auth::ApiKeyAuth;
 use routes::{api::v1::echo, user::register};
 use std::time::SystemTime;
 mod error;
 mod middleware;
 mod routes;
-
 #[get("/")]
 async fn index() -> impl Responder {
     let now = SystemTime::now();
@@ -22,7 +22,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(
                 web::scope("/api/v1")
-                    .wrap(middleware::ApiKeyAuth::new("secret".to_string()))
+                    .wrap(ApiKeyAuth::new("secret".to_string()))
                     .service(echo::service),
             )
             .service(web::scope("/user").service(register::service))
